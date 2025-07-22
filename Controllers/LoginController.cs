@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using LoginApi.Models;
+﻿using LoginApi.Models;
 using LoginApi.Services;
-using System.Drawing.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.Drawing.Text;
+using System.Security.Claims;
 
 namespace LoginApi.Controllers
 {
@@ -81,10 +83,27 @@ namespace LoginApi.Controllers
             }
         }
 
-        [HttpPut]
-        public Task<ActionResult<Users>> UpdateUserDetails()
+        [HttpPut("update/{id}")]
+        [Authorize]
+        public async Task<ActionResult<Users>> UpdateUserDetails(int id, [FromBody] UserUpdateDto dto) 
         {
-            return default;
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+                return Unauthorized();
+
+            var response = await _dbservice.UpdateUserDetailsAsync(dto);
+
+            return response.Type switch
+            {
+                ServiceResultType.Ok => NoContent(),
+                ServiceResultType.NotFound => NotFound(response.Error),
+                ServiceResultType.BadRequest => BadRequest(response.Error),
+                _ => StatusCode(500, "Unknown Error")
+            };
+
+        
         }
 
         [HttpDelete]

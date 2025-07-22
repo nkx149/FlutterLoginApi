@@ -1,5 +1,6 @@
 ﻿using LoginApi.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -88,10 +89,41 @@ namespace LoginApi.Services
                 Username = user.Username,
                 Email = user.Email,
                 Id = user.Id,
-                DateRegistered = user.DateRegistered
-
+                DateRegistered = user.DateRegistered,
+                Address = user.Address,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Age = user.Age,
+                PhoneNumber = user.PhoneNumber,
             };
         }
         
+        [HttpPut("{id}")]
+        public async Task<ServiceResult> UpdateUserDetailsAsync(UserUpdateDto dto){
+
+            var user = await _context.Users.FindAsync(dto.Id);
+
+            if (user == null) {
+                return ServiceResult.NotFound("User not found");
+            }
+
+
+            if (!string.IsNullOrWhiteSpace(dto.FirstName)) user.FirstName = dto.FirstName;
+            if (!string.IsNullOrWhiteSpace(dto.LastName)) user.LastName = dto.LastName;
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber)) user.PhoneNumber = dto.PhoneNumber;
+            if (!string.IsNullOrWhiteSpace(dto.Email)) user.Email = dto.Email;
+            if (!string.IsNullOrWhiteSpace(dto.Address)) user.Address = dto.Address;
+            if (dto.Age.HasValue) user.Age = dto.Age.Value;
+
+            // Hash the new password only if provided
+            if (!string.IsNullOrWhiteSpace(dto.Password))
+            {
+                user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
+            }
+
+            await _context.SaveChangesAsync();
+            
+            return ServiceResult.Ok();
+        }
     }
 }

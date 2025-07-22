@@ -277,3 +277,4 @@ C:\Users\kxng\source\repos\LoginApi\obj\Release\net8.0\refint\LoginApi.dll
 C:\Users\kxng\source\repos\LoginApi\obj\Release\net8.0\LoginApi.pdb
 C:\Users\kxng\source\repos\LoginApi\obj\Release\net8.0\LoginApi.genruntimeconfig.cache
 C:\Users\kxng\source\repos\LoginApi\obj\Release\net8.0\ref\LoginApi.dll
+C:\Users\kxng\source\repos\LoginApi\obj\Release\net8.0\LoginApi.sourcelink.json
